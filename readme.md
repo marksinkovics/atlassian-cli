@@ -11,6 +11,10 @@ The main purpose of this project is to create a command-line interface for Atlas
 
 This project is separated into 2 parts. The first is a reusable pip package which could be used other python scripts. While the second part is a the actual terminal interface.
 
+## Development
+
+More information about development can be found [here](docs/development.md)
+
 ## Command-line interfaces
 
 There are 2 main commands `jira-cli` and `bitbucket-cli`. Both have help menu which can give more information about the available options.
