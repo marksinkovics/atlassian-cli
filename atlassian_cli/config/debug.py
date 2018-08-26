@@ -75,7 +75,7 @@ class DebugConfig:
     def read(self):
         """ Read config file """
         if not os.path.exists(self.config_file):
-            print('Config file ({}) is missing'.format(self.config_file))
+            # print('Config file ({}) is missing'.format(self.config_file))
             return
 
         debug_data = {}

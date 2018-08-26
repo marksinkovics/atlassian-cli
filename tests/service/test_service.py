@@ -45,25 +45,34 @@ class AuthenticationTestCase:
 class ServiceTestCase:
     """ Service testing class """
 
-    def test_service_creation(self, model):
+    @patch('keyring.get_password')
+    def test_service_creation(self, keyring_mock, model):
         """ Test service creation """
+        secret_pwd = 'secretpwd1234'
+        keyring_mock.return_value = secret_pwd
         basic_auth_obj = BasicAuthentication(model)
         basic_auth = basic_auth_obj.auth()
         service = Service(basic_auth_obj)
         assert service.auth == basic_auth
 
+    @patch('keyring.get_password')
     @httpretty.activate
-    def test_get_200(self, model):
+    def test_get_200(self, keyring_mock, model):
         """ Test GET request """
+        secret_pwd = 'secretpwd1234'
+        keyring_mock.return_value = secret_pwd
         httpretty.register_uri(httpretty.GET, model.url, body='', status=200)
         service = Service(BasicAuthentication(model))
         response = service.get(model.url)
         assert response.status_code == 200
         assert response.text == ''
 
+    @patch('keyring.get_password')
     @httpretty.activate
-    def test_get_301_redirect(self, model):
+    def test_get_301_redirect(self, keyring_mock, model):
         """ Test redirecting """
+        secret_pwd = 'secretpwd1234'
+        keyring_mock.return_value = secret_pwd        
         redirect_url = 'http://redirect.example.com'
         httpretty.register_uri(httpretty.GET,
                                model.url,
@@ -75,9 +84,12 @@ class ServiceTestCase:
         assert response.status_code == 200
         assert response.text == ''
 
+    @patch('keyring.get_password')
     @httpretty.activate
-    def test_get_error(self, model):
+    def test_get_error(self, keyring_mock, model):
         """ Test GET request """
+        secret_pwd = 'secretpwd1234'
+        keyring_mock.return_value = secret_pwd
         httpretty.register_uri(httpretty.GET, model.url, body='', status=404)
         service = Service(BasicAuthentication(model))
         with pytest.raises(SystemExit):
