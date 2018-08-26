@@ -1,6 +1,8 @@
 # atlassian-cli 
 > the "missing" command-line interface for Atlassian products :rocket:
 
+[![Build Status](https://travis-ci.org/marksinkovics/atlassian-cli.svg?branch=master)](https://travis-ci.org/marksinkovics/atlassian-cli)
+
 ## **Important notice** :construction:
 
 This project is in development phase which means some breaking change is unavoidable in the future.
