@@ -3,10 +3,13 @@
 import argparse
 import json
 import os
+import re
 
 from .models import Debug
 
-class DebugConfig:
+from .formatters import Simple
+
+class DebugConfig(object):
     """ Debug configuration """
 
     def __init__(self):
@@ -27,10 +30,27 @@ class DebugConfig:
     def parser(self):
         """ Create argument parser """
         parser = argparse.ArgumentParser(add_help=False)
-        parser.add_argument('--set-loglevel', help='Set level of logging')
-        parser.add_argument('--show-elapsed-time', help='Show elapsed time of a request')
-        parser.add_argument('--show-received-bytes', help='Show the size of the received bytes')
-        parser.add_argument('--show-arguments', help='Show the given command line arguments')
+        subparsers = parser.add_subparsers()
+
+        print_parser = subparsers.add_parser('print', help='Print settings')
+        print_parser.set_defaults(debug_subcommand='print')
+
+        log_parser = subparsers.add_parser('log', help='Set log level')
+        log_parser.add_argument('log_level', type=int)
+        log_parser.set_defaults(debug_subcommand='log')
+
+        elapsed_time_parser = subparsers.add_parser('elapsed_time', help='Show elapsed time')
+        elapsed_time_parser.add_argument('elapsed_time', type=self.str2bool)
+        elapsed_time_parser.set_defaults(debug_subcommand='elapsed_time')
+
+        received_bytes_parser = subparsers.add_parser('received_bytes', help='Show received bytes')
+        received_bytes_parser.add_argument('received_bytes', type=self.str2bool)
+        received_bytes_parser.set_defaults(debug_subcommand='received_bytes')
+
+        show_arguments = subparsers.add_parser('show_arguments', help='Show arguments')
+        show_arguments.add_argument('show_arguments', type=self.str2bool)
+        show_arguments.set_defaults(debug_subcommand='show_arguments')
+
         return parser
 
     #
@@ -83,8 +103,8 @@ class DebugConfig:
         with open(self.config_file, 'r', encoding='utf-8') as file:
             try:
                 debug_data = json.load(file)
-            except json.JSONDecodeError as error:
-                print('Loading JSON has failed: {}'.format(error.msg))
+            except ValueError as error:
+                print('Loading JSON has failed: {}'.format(error))
 
         if debug_data:
             self.config = Debug(debug_data)
@@ -105,22 +125,45 @@ class DebugConfig:
     @staticmethod
     def str2bool(value):
         """ Convert str to bool """
-        return value.lower() in ("yes", "true", "t", "1")
+        if value.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif value.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
 
     def parse(self, args):
         """ Parse arguments """
+
+        subcommand = re.sub('-', '', args.debug_subcommand)
+        method_name = 'parse_{}'.format(subcommand)
+        try:
+            method = getattr(self, method_name)
+        except AttributeError:
+            raise NotImplementedError("Class `{}` does not implement `{}`"
+                                      .format(self.__class__.__name__, method_name))
+
         self.read()
-
-        if args.show_elapsed_time:
-            self.config.show_elapsed_time = self.str2bool(args.show_elapsed_time)
-
-        if args.show_received_bytes:
-            self.config.show_received_bytes = self.str2bool(args.show_received_bytes)
-
-        if args.set_loglevel:
-            self.config.log_level = int(args.set_loglevel)
-
-        if args.show_arguments:
-            self.config.show_arguments = self.str2bool(args.show_arguments)
-
+        method(args)
         self.write()
+
+    def parse_print(self, args):
+        """ Parse print command """
+        formatter = Simple()
+        print(formatter.format_debug(self.config))
+
+    def parse_log(self, args):
+        """ Parse log command """
+        self.config.log_level = int(args.log_level)
+
+    def parse_elapsed_time(self, args):
+        """ Parse elapsed_time command """
+        self.config.show_elapsed_time = args.elapsed_time
+
+    def parse_received_bytes(self, args):
+        """ Parse received_bytes command """
+        self.config.show_received_bytes = args.received_bytes
+
+    def parse_show_arguments(self, args):
+        """ Parse show_arguments command """
+        self.config.show_arguments = args.show_arguments

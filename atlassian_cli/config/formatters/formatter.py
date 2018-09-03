@@ -14,3 +14,7 @@ class Formatter:
     def format_user_configs(self, user_configs):
         """ Format a list of user_config """
         return user_configs
+
+    def format_debug(self, debug):
+        """ Format debug commands """
+        return debug
