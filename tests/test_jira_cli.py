@@ -1,26 +1,37 @@
 """ Test jira-cli functionalities"""
 
-from mock import patch
-import pytest
+from mock import patch, PropertyMock
+
+from atlassian_cli import JIRA_CLI_PROG
+from atlassian_cli.atlassian.jira.models import (User, Issue)
 
 from atlassian_cli.jira_cli import main as jira_main
-from atlassian_cli import JIRA_CLI_PROG
-from atlassian_cli.atlassian.jira.models import (
-    User,
-    Issue
-)
-
+from atlassian_cli.config.models import User as ConfigUser
 
 # pylint: disable=R0201, C0122
 
-class JiraCLITestCase:
+@patch('keyring.get_password')
+class JiraCLITestCase(object):
     """ basic CLI testing class """
 
-    @pytest.mark.skip(reason="User config file has to be mocked. Temporarily skipped.")
+    USERS = [
+        ConfigUser({
+            "createdAt": "2018-02-19T20:01:54Z",
+            "default": True,
+            "url": "https://foobarbaz.com",
+            "username": "johndoe"
+        })
+    ]
+
     @patch('sys.argv', [JIRA_CLI_PROG, 'myself'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.myself')
     @patch('atlassian_cli.atlassian.jira.formatters.Simple.formatUser')
-    def test_arg_myself(self, mock_format, mock_myself):
+    @patch('atlassian_cli.config.UserConfig.users',
+           create=True,
+           new_callable=PropertyMock,
+           return_value=USERS)
+    def test_arg_myself(self, mock_userconfig_users, mock_format, mock_myself, mock_keyring):
+        # pylint: disable=W0613
         """ test myself argument """
         user = User({
             'active': True,
@@ -32,11 +43,15 @@ class JiraCLITestCase:
         jira_main()
         mock_format.assert_called_with(user)
 
-    @pytest.mark.skip(reason="User config file has to be mocked. Temporarily skipped.")
     @patch('sys.argv', [JIRA_CLI_PROG, 'issue', 'ABC-12345'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.issue')
     @patch('atlassian_cli.atlassian.jira.formatters.Simple.formatIssue')
-    def test_arg_issue(self, mock_format, mock_issue):
+    @patch('atlassian_cli.config.UserConfig.users',
+           create=True,
+           new_callable=PropertyMock,
+           return_value=USERS)
+    def test_arg_issue(self, mock_userconfig_users, mock_format, mock_issue, mock_keyring):
+        # pylint: disable=W0613
         """ Test issue argument """
         issue = Issue({
             'id': '1',

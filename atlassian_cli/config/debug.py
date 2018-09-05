@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import sys
 
 from .models import Debug
 
@@ -95,7 +96,7 @@ class DebugConfig(object):
     def read(self):
         """ Read config file """
         if not os.path.exists(self.config_file):
-            # print('Config file ({}) is missing'.format(self.config_file))
+            print('Config file ({}) is missing'.format(self.config_file), file=sys.stderr)
             return
 
         debug_data = {}

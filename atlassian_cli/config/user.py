@@ -5,6 +5,7 @@ import datetime
 import json
 import re
 import os
+import sys
 
 from .helpers.action import NonEmptyStringAction
 from .helpers.dialog import Dialog
@@ -12,7 +13,7 @@ from .helpers.dialog import Dialog
 from .models import User
 from .formatters import Simple
 
-class UserConfig:
+class UserConfig(object):
     """ User configuration """
 
     def __init__(self):
@@ -107,7 +108,7 @@ class UserConfig:
     def read(self):
         """ Read config file """
         if not os.path.exists(self.config_file):
-            # print('Config file ({}) is missing'.format(self.config_file))
+            print('Config file ({}) is missing'.format(self.config_file), file=sys.stderr)
             return
 
         users_data = None
@@ -115,8 +116,8 @@ class UserConfig:
         with open(self.config_file, 'r', encoding='utf-8') as file:
             try:
                 users_data = json.load(file)
-            except json.JSONDecodeError as error:
-                print('Loading JSON has failed: {}'.format(error.msg))
+            except ValueError as error:
+                print('Loading JSON has failed: {}'.format(error))
 
         if users_data:
             self.users = list(map(User, users_data))

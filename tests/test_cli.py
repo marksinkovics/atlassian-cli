@@ -1,7 +1,8 @@
 """ Test basic CLI functionalities"""
 
+import json
 import pytest
-from mock import patch
+from mock import patch, mock_open
 
 from atlassian_cli.bitbucket_cli import main as bitbucket_main
 from atlassian_cli.jira_cli import main as jira_main
@@ -21,14 +22,18 @@ from atlassian_cli.metadata import APPLICATION_VERSION
 class CLITestCase:
     """ basic CLI testing class """
 
-    def test_with_empty_args(self, capsys, prog, main):
+    @patch('os.path.exists', return_value=True)
+    @patch('builtins.open', mock_open(read_data=b'    '))
+    def test_with_empty_args(self, mock_builtins_open, capsys, prog, main):
         """ test with empty arguments """
         with pytest.raises(SystemExit):
             main()
         _, err = capsys.readouterr()
         assert err.startswith('usage: {}'.format(prog))
 
-    def test_invalid_args(self, prog, main, capsys):
+    @patch('os.path.exists', return_value=True)
+    @patch('builtins.open', mock_open(read_data=b'    '))
+    def test_invalid_args(self, mock_builtins_open, prog, main, capsys):
         "test with invalid command"
         with pytest.raises(SystemExit):
             with patch('sys.argv', [prog, 'hello']):
