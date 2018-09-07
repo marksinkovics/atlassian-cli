@@ -2,6 +2,7 @@
 > the "missing" command-line interface for Atlassian products :rocket:
 
 [![Build Status](https://travis-ci.org/marksinkovics/atlassian-cli.svg?branch=master)](https://travis-ci.org/marksinkovics/atlassian-cli)
+[![Coverage Status](https://coveralls.io/repos/github/marksinkovics/atlassian-cli/badge.svg?branch=master)](https://coveralls.io/github/marksinkovics/atlassian-cli?branch=master)
 
 ## **Important notice** :construction:
 
