@@ -18,3 +18,4 @@ mock
 httpretty
 pytz
 # line_profiler
+python-coveralls
