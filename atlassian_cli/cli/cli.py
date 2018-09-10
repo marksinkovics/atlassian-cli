@@ -1,6 +1,7 @@
 """ Represent a base class handling command line arguments """
 
 import argparse
+import argcomplete
 
 from atlassian_cli.metadata import APPLICATION_VERSION
 
@@ -42,6 +43,7 @@ class CLI:
 
     def parse(self):
         """ Parse command line arguments """
+        argcomplete.autocomplete(self.parser)
         return self.parser.parse_args()
 
     def parse_command(self, args):
