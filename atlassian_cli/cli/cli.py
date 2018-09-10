@@ -53,7 +53,7 @@ class CLI:
         """ Parse imput arguments """
         args = self.parse()
         if self.debug.config.show_arguments:
-            print('Args: {}'.format(vars(args)))
+            print('===> Arguments: {}'.format(vars(args)))
         if not vars(args):
             self.parser.print_help()
             return

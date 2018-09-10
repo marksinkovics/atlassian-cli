@@ -13,7 +13,7 @@ from atlassian_cli.metadata import (
 
 # pylint: disable=R0201
 
-class DebugConfigTestCase(object):
+class DebugConfigTestCase:
     """ Test DebugConfig """
 
     DEBUG_CONFIG_DATA = {

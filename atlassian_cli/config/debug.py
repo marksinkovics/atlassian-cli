@@ -10,7 +10,7 @@ from .models import Debug
 
 from .formatters import Simple
 
-class DebugConfig(object):
+class DebugConfig:
     """ Debug configuration """
 
     def __init__(self):
@@ -48,9 +48,13 @@ class DebugConfig(object):
         received_bytes_parser.add_argument('received_bytes', type=self.str2bool)
         received_bytes_parser.set_defaults(debug_subcommand='received_bytes')
 
-        show_arguments = subparsers.add_parser('show_arguments', help='Show arguments')
-        show_arguments.add_argument('show_arguments', type=self.str2bool)
-        show_arguments.set_defaults(debug_subcommand='show_arguments')
+        show_arguments_parser = subparsers.add_parser('show_arguments', help='Show arguments')
+        show_arguments_parser.add_argument('show_arguments', type=self.str2bool)
+        show_arguments_parser.set_defaults(debug_subcommand='show_arguments')
+
+        show_url_parser = subparsers.add_parser('show_url', help="Show the request url")
+        show_url_parser.add_argument('show_url', type=self.str2bool)
+        show_url_parser.set_defaults(debug_subcommand='show_url')
 
         return parser
 
@@ -168,3 +172,7 @@ class DebugConfig(object):
     def parse_show_arguments(self, args):
         """ Parse show_arguments command """
         self.config.show_arguments = args.show_arguments
+
+    def parse_show_url(self, args):
+        """ Parse show_url command """
+        self.config.show_url = args.show_url

@@ -11,7 +11,7 @@ from atlassian_cli.config.models import User as ConfigUser
 # pylint: disable=R0201, C0122
 
 @patch('keyring.get_password')
-class JiraCLITestCase(object):
+class JiraCLITestCase:
     """ basic CLI testing class """
 
     USERS = [
@@ -25,7 +25,7 @@ class JiraCLITestCase(object):
 
     @patch('sys.argv', [JIRA_CLI_PROG, 'myself'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.myself')
-    @patch('atlassian_cli.atlassian.jira.formatters.Simple.formatUser')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_user')
     @patch('atlassian_cli.config.UserConfig.users',
            create=True,
            new_callable=PropertyMock,
@@ -45,7 +45,7 @@ class JiraCLITestCase(object):
 
     @patch('sys.argv', [JIRA_CLI_PROG, 'issue', 'ABC-12345'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.issue')
-    @patch('atlassian_cli.atlassian.jira.formatters.Simple.formatIssue')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_issue')
     @patch('atlassian_cli.config.UserConfig.users',
            create=True,
            new_callable=PropertyMock,

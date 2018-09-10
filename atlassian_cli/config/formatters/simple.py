@@ -32,4 +32,5 @@ class Simple(Formatter):
         result += "\nShow elapsed time: {}".format(debug.show_elapsed_time)
         result += "\nShow received bytes: {}".format(debug.show_received_bytes)
         result += "\nShow arguments: {}".format(debug.show_arguments)
+        result += "\nShow url: {}".format(debug.show_url)
         return result

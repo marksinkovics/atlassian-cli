@@ -13,7 +13,7 @@ from .helpers.dialog import Dialog
 from .models import User
 from .formatters import Simple
 
-class UserConfig(object):
+class UserConfig:
     """ User configuration """
 
     def __init__(self):

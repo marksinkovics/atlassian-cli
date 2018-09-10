@@ -61,7 +61,9 @@ class JiraCLI(CLI):
     def create_subparser_board(self):
         """ Create subparser for board command """
         board_help = 'Show a specific board by id'
-        board_parser = self.subparsers.add_parser('board', help=board_help)
+        board_parser = self.subparsers.add_parser('board', 
+                                                  help=board_help, 
+                                                  parents=[self.output_parent_parser])
         board_parser.add_argument('boardId', action='store', help='boardId')
         board_parser.set_defaults(subcommand='board')
 
@@ -84,6 +86,25 @@ class JiraCLI(CLI):
                                                            parents=[self.output_parent_parser])
         sprint_issue_parser.set_defaults(sprint_subcommand='issues')
 
+    def create_subparser_epic(self):
+        """ Create subparser for epic command """
+        epics_help = "Show epics for a specific board"
+        epics_parser = self.subparsers.add_parser('epics',
+                                                  help=epics_help,
+                                                  parents=[self.output_parent_parser])
+        epics_parser.add_argument('boardId', help='boardId')
+        epics_parser.set_defaults(subcommand='epics')
+
+        epic_help = 'Show details of a specific epic'
+        epic_parser = self.subparsers.add_parser('epic', help=epic_help)
+        epic_parser.add_argument('epicId', help='epicId')
+        epic_parser.set_defaults(subcommand='epic')
+        epic_subparsers = epic_parser.add_subparsers()
+        epic_issue_parser = epic_subparsers.add_parser('issues',
+                                                       help='Issues for a specific epic',
+                                                       parents=[self.output_parent_parser])
+        epic_issue_parser.set_defaults(epic_subcommand='issues')
+
     def create_subparser_jql(self):
         """ Create subparser for sprint command """
         jql_parser = self.subparsers.add_parser('jql',
@@ -101,11 +122,13 @@ class JiraCLI(CLI):
         self.create_subparser_boards()
         self.create_subparser_board()
         self.create_subparser_sprint()
+        self.create_subparser_epic()
         self.create_subparser_jql()
 
     def create_parser(self):
         super().create_parser()
         self.parser.set_defaults(command='jira')
+
 
     def parse_command(self, args):
         if super().parse_command(args):
@@ -150,37 +173,44 @@ class JiraCLI(CLI):
         """ Parse myself command """
         formatter = Simple()
         user = service.myself()
-        print(formatter.formatUser(user))
+        print(formatter.format_user(user))
 
     def parse_issue(self, service, args):
         """ Parse issue command """
         formatter = Simple()
         issue = service.issue(args.issueId)
-        print(formatter.formatIssue(issue))
+        print(formatter.format_issue(issue))
 
     def parse_jql(self, service, args):
         """ Parse jql command """
         formatter = Simple(oneline=args.oneline)
         for issues in service.jql(args.jql):
-            print(formatter.formatIssues(issues))
+            print(formatter.format_issues(issues))
 
     def parse_boards(self, service, args):
         """ Parse boards command """
         formatter = Simple(oneline=args.oneline)
         for boards in service.boards():
-            print(formatter.formatBoards(boards))
+            print(formatter.format_boards(boards))
 
     def parse_board(self, service, args):
         """ Parse board command """
         formatter = Simple()
         board = service.board(args.boardId)
-        print(formatter.formatBoard(board))
+        print(formatter.format_board(board))
+        if not args.oneline:
+            print("=> Sprints: ")
+            for sprints in service.sprints(args.boardId):
+                print(formatter.format_sprints(sprints))
+            print("=> Epics: ")
+            for epics in service.epics(args.boardId):
+                print(formatter.format_epics(epics))
 
     def parse_sprints(self, service, args):
         """ Parse sprints command """
         formatter = Simple(oneline=args.oneline)
         for sprints in service.sprints(args.boardId):
-            print(formatter.formatSprints(sprints))
+            print(formatter.format_sprints(sprints))
 
     def parse_sprint(self, service, args):
         """ Parse sprint command """
@@ -188,8 +218,26 @@ class JiraCLI(CLI):
             if args.sprint_subcommand == 'issues':
                 formatter = Simple(oneline=args.oneline)
                 for issues in service.sprint_issues(args.sprintId):
-                    print(formatter.formatIssues(issues))
+                    print(formatter.format_issues(issues))
         else:
             formatter = Simple()
             sprint = service.sprint(args.sprintId)
-            print(formatter.formatSprint(sprint))
+            print(formatter.format_sprint(sprint))
+
+    def parse_epics(self, service, args):
+        """ Parse epics command """
+        formatter = Simple(oneline=args.oneline)
+        for epics in service.epics(args.boardId):
+            print(formatter.format_epics(epics))
+
+    def parse_epic(self, service, args):
+        """ Parse epic command """
+        if hasattr(args, 'epic_subcommand'):
+            if args.epic_subcommand == 'issues':
+                formatter = Simple(oneline=args.oneline)
+                for issues in service.epic_issues(args.epicId):
+                    print(formatter.format_issues(issues))
+        else:
+            formatter = Simple()
+            epic = service.epic(args.epicId)
+            print(formatter.format_epic(epic))

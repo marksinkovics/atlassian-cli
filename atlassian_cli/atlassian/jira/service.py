@@ -6,7 +6,8 @@ from atlassian_cli.atlassian.jira.models import (
     Board,
     Issue,
     User,
-    Sprint
+    Sprint,
+    Epic
 )
 
 class JiraService(Service):
@@ -27,9 +28,12 @@ class JiraService(Service):
                 'Accept-Encoding' : 'gzip,deflate'}
 
     def get(self, url, **kwargs):
+        """ Request content from URL """
+        if self.debug.config.show_url:
+            print('===> URL: {}'.format(url))
         response = super().get(url, **kwargs)
         if self.debug.config.show_elapsed_time:
-            print('Elapsed time: {}'.format(response.elapsed.total_seconds()))
+            print('===> Elapsed time: {}'.format(response.elapsed.total_seconds()))
         return response
 
     def pager_get(self, url, values_key="values"):
@@ -50,9 +54,11 @@ class JiraService(Service):
             response_json = response.json()
             start_index += response_json['maxResults']
             values = response.json()[values_key]
-            yield values
             if not values:
                 is_last_page = True
+                break
+            else:
+                yield values
 
     def myself(self):
         """ Get infomation about the current user """
@@ -121,5 +127,24 @@ class JiraService(Service):
     def sprint_issues(self, sprint_id):
         """ Get issues of a specific sprint """
         url = self.model.url + '/rest/agile/1.0/sprint/' + sprint_id + '/issue'
+        for values in self.iterator_get(url, values_key='issues'):
+            yield list(map(Issue, values))
+
+    def epics(self, board_id):
+        """ Get epics for a specific boards """
+        url = self.model.url + '/rest/agile/1.0/board/' + board_id + '/epic'
+        for values in self.iterator_get(url):
+            epics = list(map(Epic, values))
+            yield epics
+
+    def epic(self, epic_id):
+        """ Get information about a specific epic """
+        url = self.model.url + '/rest/agile/1.0/epic/' + epic_id
+        value = self.get(url).json()
+        return Epic(value)
+
+    def epic_issues(self, epic_id):
+        """ Get issues of a specific epic """
+        url = self.model.url + '/rest/agile/1.0/epic/' + epic_id + '/issue'
         for values in self.iterator_get(url, values_key='issues'):
             yield list(map(Issue, values))

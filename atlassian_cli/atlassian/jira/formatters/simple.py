@@ -6,15 +6,16 @@ from termcolor import colored
 from atlassian_cli.atlassian.jira.formatters import Formatter
 
 class Simple(Formatter):
+    """ Make a simple formatter for Jira """
 
-    def formatUser(self, user):
+    def format_user(self, user):
         return user.name
 
-    def formatUsers(self, users):
-        results = list(map(self.formatUser, users))
+    def format_users(self, users):
+        results = list(map(self.format_user, users))
         return "\n".join(results)
 
-    def formatIssue(self, issue):
+    def format_issue(self, issue):
         result = "{} - {}".format(colored(issue.key, attrs=['bold']),
                                   issue.fields.summary)
         if self._oneline:
@@ -47,22 +48,42 @@ class Simple(Formatter):
 
         return result
 
-    def formatIssues(self, issues):
-        results = list(map(self.formatIssue, issues))
+    def format_issues(self, issues):
+        results = list(map(self.format_issue, issues))
         return "\n".join(results)
 
-    def formatBoard(self, board):
+    def format_board(self, board):
         result = '{:12} - {}'.format(colored(board.id_, attrs=['bold']), board.name)
         return result
 
-    def formatBoards(self, boards):
-        results = list(map(self.formatBoard, boards))
+    def format_boards(self, boards):
+        results = list(map(self.format_board, boards))
         return "\n".join(results)
 
-    def formatSprint(self, sprint):
-        result = '{:12} - {}'.format(colored(sprint.id_, attrs=['bold']), sprint.name)
+    def format_sprint(self, sprint):
+        if sprint.state == 'closed':
+            state_msg = colored('(closed)', 'red')
+        elif sprint.state == 'active':
+            state_msg = colored('(active)', 'green')
+        elif sprint.state == 'future':
+            state_msg = colored('(future)', 'blue')
+
+
+        result = '{:12} - {} {}'.format(colored(sprint.id_, attrs=['bold']),
+                                        sprint.name,
+                                        state_msg)
         return result
 
-    def formatSprints(self, sprints):
-        results = list(map(self.formatSprint, sprints))
+    def format_sprints(self, sprints):
+        results = list(map(self.format_sprint, sprints))
+        return "\n".join(results)
+
+    def format_epic(self, epic):
+        """ Format Epic model """
+        result = '{:15} - {}'.format(colored(epic.id_, attrs=['bold']), epic.name)
+        return result
+
+    def format_epics(self, epics):
+        """ Format a list of Epic model """
+        results = list(map(self.format_epic, epics))
         return "\n".join(results)

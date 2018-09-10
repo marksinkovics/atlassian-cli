@@ -13,3 +13,4 @@ class Debug(JsonObject):
     show_elapsed_time = BooleanProperty(default=False)
     show_received_bytes = BooleanProperty(default=False)
     show_arguments = BooleanProperty(default=False)
+    show_url = BooleanProperty(default=False)
