@@ -7,11 +7,13 @@ import pytest
 
 from atlassian_cli.helpers import EpochProperty
 
+# pylint: disable=R0903
+
 class EpochPropertySample(JsonObject):
     """ Class for testing property """
     sample = EpochProperty()
 
-# pylint: disable=R0903,R0201
+# pylint: disable=R0201
 class EpochPropertyTestCase:
     """ Test epoch property """
 
@@ -32,7 +34,7 @@ class EpochPropertyTestCase:
         with pytest.raises(ValueError):
             _ = EpochPropertySample(self.json_obj)
 
-    def test_mapping_fail_invalid_ISO(self):
+    def test_mapping_fail_invalid_iso(self):
         """ Test mapping failed """
         with pytest.raises(ValueError):
             _ = EpochPropertySample(self.invalid_iso_json_obj)
