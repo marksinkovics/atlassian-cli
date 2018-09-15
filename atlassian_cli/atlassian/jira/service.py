@@ -37,7 +37,7 @@ class JiraService(Service):
         return response
 
     def pager_get(self, url, values_key="values"):
-        """ Get value page by page (synchronously)"""
+        """ Get value page by page (synchronously) """
         result = []
         for values in self.iterator_get(url, values_key=values_key):
             result += values
@@ -87,7 +87,7 @@ class JiraService(Service):
         return Issue(value)
 
     def jql(self, jql):
-        """ Get tickets via Jira Query Languate (JQL) """
+        """ Get tickets via Jira Query Language (JQL) """
         params = {
             'jql' : jql,
             'fields' : 'status,components,labels,summary,assignee,closedSprints,reporter'

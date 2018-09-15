@@ -18,6 +18,6 @@ class Epic(JsonObject):
     """ Epic model """
     id_ = IntegerProperty(name='id')
     done = BooleanProperty()
-    key = IntegerProperty(name='key')
-    name = StringProperty(name='name')
+    key = IntegerProperty()
+    name = StringProperty()
     color = ObjectProperty(EpicColor)
