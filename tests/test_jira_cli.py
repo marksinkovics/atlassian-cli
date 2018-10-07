@@ -25,13 +25,17 @@ class JiraCLITestCase:
     # pylint: disable=C0301
     """ basic CLI testing class """
 
+    #
+    #   Myself
+    #
+
     @patch('sys.argv', [JIRA_CLI_PROG, 'myself'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.myself')
     @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_user')
-    def test_arg_myself(self, mock_format, mock_myself, mock_userconfig_users, mock_keyring):
+    def test_arg_myself(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
         # pylint: disable=W0613
         """ test myself argument """
-        mock_myself.return_value = MYSELF
+        mock_service.return_value = MYSELF
         jira_main()
         mock_format.assert_called_with(MYSELF)
 
@@ -42,12 +46,26 @@ class JiraCLITestCase:
     @patch('sys.argv', [JIRA_CLI_PROG, 'issue', 'ABC-1'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.issue')
     @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_issue')
-    def test_arg_issue(self, mock_format, mock_issue, mock_userconfig_users, mock_keyring):
+    def test_arg_issue(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
         # pylint: disable=W0613
         """ Test issue argument """
-        mock_issue.return_value = ISSUE
+        mock_service.return_value = ISSUE
         jira_main()
         mock_format.assert_called_with(ISSUE)
+
+    #
+    #   JQL
+    #
+
+    @patch('sys.argv', [JIRA_CLI_PROG, 'jql', 'a'])
+    @patch('atlassian_cli.atlassian.jira.service.JiraService.jql')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_issues')
+    def test_arg_jql(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
+        # pylint: disable=W0613
+        """ Test jql argument """
+        mock_service.return_value = iter([ISSUES])
+        jira_main()
+        mock_format.assert_called_with(ISSUES)
 
     #
     #   Board
