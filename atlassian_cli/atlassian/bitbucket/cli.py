@@ -124,30 +124,30 @@ class BitbucketCLI(CLI):
         """ Parse projects command """
         formatter = Simple(oneline=args.oneline)
         for projects in service.projects():
-            print(formatter.formatProjects(projects))
+            print(formatter.format_projects(projects))
 
     def parse_project(self, service, args):
         """ Parse project command """
         formatter = Simple(oneline=args.oneline)
         if args.repos:
             for repos in service.project_repos(args.projectId):
-                print(formatter.formatRepositories(repos))
+                print(formatter.format_repositories(repos))
         elif args.repo:
             repo = service.project_repo(args.projectId, args.repo)
-            print(formatter.formatRepository(repo))
+            print(formatter.format_repository(repo))
         else:
             project = service.project(args.projectId)
-            print(formatter.formatProject(project))
+            print(formatter.format_project(project))
 
     def parse_mypullrequests(self, service, args):
         """ Parse my-pull-requests command """
         formatter = Simple(oneline=args.oneline)
         for pull_requests in service.pull_requests():
-            print(formatter.formatpull_requests(pull_requests))
+            print(formatter.format_pull_requests(pull_requests))
 
     def parse_mypullrequestscount(self, service, args):
         # pylint: disable=W0613
         """ Parse my-pull-requests-count command """
         formatter = Simple()
         count = service.pull_requests_count()
-        print(formatter.formatPullRequestCount(count))
+        print(formatter.format_pull_request_count(count))

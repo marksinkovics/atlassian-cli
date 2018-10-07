@@ -5,23 +5,23 @@ class Formatter:
     def __init__(self, oneline=False):
         self._oneline = oneline
 
-    def formatProject(self, project):
+    def format_project(self, project):
         return project
 
-    def formatProjects(self, projects):
+    def format_projects(self, projects):
         return projects
 
-    def formatPullRequest(self, pullRequest):
-        return pullRequest
+    def format_pull_request(self, pull_request):
+        return pull_request
 
-    def formatpull_requests(self, pull_requests):
+    def format_pull_requests(self, pull_requests):
         return pull_requests
 
-    def formatPullRequestCount(self, pullRequestCount):
-        return pullRequestCount
+    def format_pull_request_count(self, pull_request_count):
+        return pull_request_count
 
-    def formatRepository(self, repository):
+    def format_repository(self, repository):
         return repository
 
-    def formatRepositories(self, repositories):
+    def format_repositories(self, repositories):
         return repositories

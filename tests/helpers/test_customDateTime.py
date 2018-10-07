@@ -22,6 +22,7 @@ class CustomDateTimePropertyTestCase:
     datetime_string = '2000-01-02T11-12-13:140000'
     json_obj = {'sample' : datetime_string}
     wrong_json_obj = {'sample' : '2000;01;02T11;12;13;140000'}
+    invalid_json_obj = {'sample' : 1}
     date = datetime(2000, 1, 2, 11, 12, 13, 140000)
     obj = TestModel(json_obj)
 
@@ -30,10 +31,15 @@ class CustomDateTimePropertyTestCase:
         result = TestModel(self.json_obj)
         assert result.sample == self.date
 
-    def test_mapping_fail(self):
+    def test_mapping_fail_wrong_json(self):
         """ Test mapping failed """
         with pytest.raises(ValueError):
             _ = TestModel(self.wrong_json_obj)
+
+    def test_mapping_fail_invalid_value(self):
+        """ Test mapping failed """
+        with pytest.raises(ValueError):
+            _ = TestModel(self.invalid_json_obj)
 
     def test_unmapping(self):
         """ Test simple unmapping """
