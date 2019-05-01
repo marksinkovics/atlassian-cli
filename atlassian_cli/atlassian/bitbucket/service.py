@@ -25,9 +25,12 @@ class BitbucketService(Service):
                 'Accept-Encoding' : 'gzip,deflate'}
 
     def get(self, url, **kwargs):
+        """ Request content from URL """
+        if self.debug.config.show_url:
+            print('===> URL: {}'.format(url))
         response = super().get(url, **kwargs)
         if self.debug.config.show_elapsed_time:
-            print('Elapsed time: {}'.format(response.elapsed.total_seconds()))
+            print('===> Elapsed time: {}'.format(response.elapsed.total_seconds()))
         return response
 
     def pager_get(self, url, values_key="values"):
@@ -75,6 +78,15 @@ class BitbucketService(Service):
     def project_repo(self, project_id, repo_slug):
         """ Get specific repo for a specific project """
         url = self.model.url + '/rest/api/1.0/projects/' + project_id + '/repos/' + repo_slug
+        value = self.get(url).json()
+        return Repo(value)
+
+    def project_repo_pull_requests(self, project_id, repo_slug):
+        """ Get open pull requests for a specific repo in a certain project """
+        url = self.model.url + '/rest/api/1.0/projects/' + project_id + '/repos/' + repo_slug + '/pull-requests'
+        for values in self.iterator_get(url):
+            yield list(map(PullRequest, values))
+
         value = self.get(url).json()
         return Repo(value)
 

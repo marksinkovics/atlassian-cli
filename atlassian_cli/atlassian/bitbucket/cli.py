@@ -48,14 +48,25 @@ class BitbucketCLI(CLI):
         project_parser.set_defaults(subcommand='project')
         project_parser.add_argument('projectId')
 
-        repo_group = project_parser.add_mutually_exclusive_group()
-        repo_group.add_argument('--repos',
-                                action='store_true',
-                                help="Show repositories for a specific project")
-        repo_group.add_argument('--repo',
-                                action='store',
-                                metavar='slug',
-                                help='Show detail of repository')
+        project_subparsers = project_parser.add_subparsers()
+
+        project_repos_parser = project_subparsers.add_parser('repos',
+                                                             help='List repositories of current project',
+                                                             parents=[self.output_parent_parser])
+        project_repos_parser.set_defaults(project_subcommand='repos')
+
+        project_repo_parser = project_subparsers.add_parser('repo',
+                                                             help='Show detail of the given repository in the current project',
+                                                             parents=[self.output_parent_parser])
+        project_repo_parser.add_argument('repoSlug')
+        project_repo_parser.set_defaults(project_subcommand='repo')
+
+        project_repo_subparser = project_repo_parser.add_subparsers()
+        project_repo_pull_request_parser = project_repo_subparser.add_parser("pull-requests",
+                                                                             help='List pull-requests of current repo',
+                                                                             parents=[self.output_parent_parser])
+        project_repo_pull_request_parser.set_defaults(repo_subcommand='pull-requests')
+
 
     def create_subparser_mypr(self):
         """ Create subparser pull-requests command """
@@ -129,12 +140,17 @@ class BitbucketCLI(CLI):
     def parse_project(self, service, args):
         """ Parse project command """
         formatter = Simple(oneline=args.oneline)
-        if args.repos:
-            for repos in service.project_repos(args.projectId):
-                print(formatter.format_repositories(repos))
-        elif args.repo:
-            repo = service.project_repo(args.projectId, args.repo)
-            print(formatter.format_repository(repo))
+        if hasattr(args, 'project_subcommand'):
+            if args.project_subcommand == 'repos':
+                for repos in service.project_repos(args.projectId):
+                    print(formatter.format_repositories(repos))
+            elif args.project_subcommand == 'repo':
+                if hasattr(args, 'repo_subcommand'):
+                    for pull_requests in service.project_repo_pull_requests(args.projectId, args.repoSlug):
+                        print(formatter.format_pull_requests(pull_requests))
+                else:
+                    repo = service.project_repo(args.projectId, args.repoSlug)
+                    print(formatter.format_repository(repo))
         else:
             project = service.project(args.projectId)
             print(formatter.format_project(project))
