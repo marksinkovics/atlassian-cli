@@ -1,4 +1,4 @@
-# atlassian-cli 
+# atlassian-cli
 > the "missing" command-line interface for Atlassian products :rocket:
 
 [![Build Status](https://travis-ci.org/marksinkovics/atlassian-cli.svg?branch=master)](https://travis-ci.org/marksinkovics/atlassian-cli)
@@ -13,6 +13,14 @@ This project is in development phase which means some breaking change is unavoid
 The main purpose of this project is to create a command-line interface for Atlassian products (mainly Jira, Bitbucket and Confluence) in order to make possible other scripts (bash, python, etc) to easily communicate and modify those products.
 
 This project is separated into 2 parts. The first is a reusable pip package which could be used other python scripts. While the second part is a the actual terminal interface.
+
+## Install
+
+Install directly from GitHub:
+
+```
+pip3 install -e git+https://github.com/marksinkovics/atlassian-cli.git@master#egg=atlassian-cli
+```
 
 ## Development
 
@@ -29,7 +37,7 @@ The first level of commands is the following:
 	```
 	usage: jira-cli [-h] [--version]
 	                {config,myself,issue,boards,board,sprints,sprint,jql} ...
-	
+
 	positional arguments:
 	  {config,myself,issue,boards,board,sprints,sprint,jql}
 	                        commands
@@ -41,7 +49,7 @@ The first level of commands is the following:
 	    sprints             Show sprints for a specific board
 	    sprint              Show details of a specific sprint
 	    jql                 Jira Query Language
-	
+
 	optional arguments:
 	  -h, --help            show this help message and exit
 	  --version             show program's version number and exit
@@ -53,7 +61,7 @@ The first level of commands is the following:
 	usage: bitbucket-cli [-h] [--version]
 	                     {config,projects,project,my-pull-requests,my-pull-requests-count}
 	                     ...
-	
+
 	positional arguments:
 	  {config,projects,project,my-pull-requests,my-pull-requests-count}
 	                        commands
@@ -63,7 +71,7 @@ The first level of commands is the following:
 	    my-pull-requests    my-pull-requests
 	    my-pull-requests-count
 	                        my-pull-requests-count
-	
+
 	optional arguments:
 	  -h, --help            show this help message and exit
 	  --version             show program's version number and exit
