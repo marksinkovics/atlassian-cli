@@ -43,3 +43,8 @@ class Formatter:
     def format_epics(self, epics):
         """ Format a list of Epic model """
         return epics
+
+    def format_status(self, status):
+        """ Format an Status model """
+        return status
+

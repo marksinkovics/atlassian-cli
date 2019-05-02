@@ -20,6 +20,12 @@ class StatusCategory(JsonObject):
     colorName = StringProperty()
     name = StringProperty()
 
+    def color(self):
+        """ Convert to termcolor """
+        if self.colorName == 'blue-gray':
+            return 'blue'
+        return self.colorName
+
 class Status(JsonObject):
     """ Status model for issue fields """
     description = StringProperty()
@@ -27,6 +33,7 @@ class Status(JsonObject):
     name = StringProperty()
     id_ = StringProperty(name='id')
     statusCategory = ObjectProperty(StatusCategory)
+
 
 class Component(JsonObject):
     """ Component model for issue fields """

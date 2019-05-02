@@ -16,13 +16,13 @@ class Simple(Formatter):
         return "\n".join(results)
 
     def format_issue(self, issue):
-        result = "{} - {}".format(colored(issue.key, attrs=['bold']),
-                                  issue.fields.summary)
+        result = f"{colored(issue.key, attrs=['bold'])} - {issue.fields.summary}"
+
         if self._oneline:
             return result
 
         if issue.fields.status.name:
-            result += '\nStatus: {}'.format(issue.fields.status.name)
+            result += f'\nStatus: {self.format_status(issue.fields.status)}'
 
         if issue.fields.assignee:
             result += '\nAssignee: {}'.format(issue.fields.assignee.name)
@@ -37,7 +37,8 @@ class Simple(Formatter):
         if issue.fields.subtasks:
             result += '\nSubtasks: '
             for subtask in issue.fields.subtasks:
-                result += '\n  {} - {}'.format(subtask.key, subtask.fields.summary)
+                result += '\n  {:12} - {}'.format(subtask.key, subtask.fields.summary)
+                result += ' ' + self.format_status(subtask.fields.status)
 
         if issue.fields.components:
             components = map(lambda comp: comp.name, issue.fields.components)
@@ -87,3 +88,9 @@ class Simple(Formatter):
         """ Format a list of Epic model """
         results = list(map(self.format_epic, epics))
         return "\n".join(results)
+
+    def format_status(self, status):
+        """ Format an Status model """
+        color = status.statusCategory.color()
+        on_color = f"on_{color}"
+        return colored(f"({status.name})", color)
