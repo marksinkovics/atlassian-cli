@@ -8,11 +8,11 @@
 # install dev requirements
 #
 
-pytest>=2.7
+pytest>=3.6
 pytest-env
 pytest-mock
 pytest-env
-pytest-cov
+pytest-cov>=2.4.0,<2.6
 pytest-runner
 mock
 httpretty
