@@ -44,7 +44,14 @@ class Formatter:
         """ Format a list of Epic model """
         return epics
 
+    def format_version(self, version):
+        """ Format an Version model """
+        return version
+
+    def format_versions(self, versions):
+        """ Format a list of Version model """
+        return versions
+
     def format_status(self, status):
         """ Format an Status model """
         return status
-

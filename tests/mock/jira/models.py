@@ -6,7 +6,8 @@ from atlassian_cli.atlassian.jira.models import (
     Issue,
     Sprint,
     Board,
-    Epic
+    Epic,
+    Version
 )
 
 #
@@ -106,3 +107,30 @@ EPICS = [
 ]
 
 EPIC = EPICS[0]
+
+#
+# Version
+#
+
+VERSIONS = [
+    Version({
+        'id': 1,
+        'projectId': 12345,
+        'name': 'Version1',
+        'description': 'Version1',
+        'archived': False,
+        'release': False,
+        'releaseDate': '2019-09-03T00:00:00.000Z'
+    }),
+    Version({
+        'id': 2,
+        'projectId': 12345,
+        'name': 'Version2',
+        'description': 'Version2',
+        'archived': False,
+        'release': True,
+        'releaseDate': '2019-09-03T00:00:00.000Z'
+    })
+]
+
+VERSION = VERSIONS[0]

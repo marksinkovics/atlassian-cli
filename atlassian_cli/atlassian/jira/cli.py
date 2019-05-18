@@ -61,8 +61,8 @@ class JiraCLI(CLI):
     def create_subparser_board(self):
         """ Create subparser for board command """
         board_help = 'Show a specific board by id'
-        board_parser = self.subparsers.add_parser('board', 
-                                                  help=board_help, 
+        board_parser = self.subparsers.add_parser('board',
+                                                  help=board_help,
                                                   parents=[self.output_parent_parser])
         board_parser.add_argument('boardId', action='store', help='boardId')
         board_parser.set_defaults(subcommand='board')
@@ -105,13 +105,41 @@ class JiraCLI(CLI):
                                                        parents=[self.output_parent_parser])
         epic_issue_parser.set_defaults(epic_subcommand='issues')
 
+    def create_subparser_version(self):
+        """ Create subparser for version command """
+        versions_help = "Show versions for a specific board"
+        versions_parser = self.subparsers.add_parser('versions',
+                                                  help=versions_help,
+                                                  parents=[self.output_parent_parser])
+        versions_parser.add_argument('boardId', help='boardId')
+        versions_parser.set_defaults(subcommand='versions')
+
+        version_help = 'Show details of a specific version'
+        version_parser = self.subparsers.add_parser('version', help=version_help)
+        version_parser.add_argument('versionId', help='versionId')
+        version_parser.set_defaults(subcommand='version')
+        version_subparsers = version_parser.add_subparsers()
+        version_issue_parser = version_subparsers.add_parser('issues',
+                                                       help='Issues for a specific version',
+                                                       parents=[self.output_parent_parser])
+        version_issue_parser.set_defaults(version_subcommand='issues')
+
+    def create_subparser_backlog(self):
+        """ Create subparser for backlog command """
+        backlog_help = 'Show backlog specific board by id'
+        backlog_parser = self.subparsers.add_parser('backlog',
+                                                  help=backlog_help,
+                                                  parents=[self.output_parent_parser])
+        backlog_parser.add_argument('boardId', action='store', help='boardId')
+        backlog_parser.set_defaults(subcommand='backlog')
+
     def create_subparser_jql(self):
         """ Create subparser for sprint command """
         jql_parser = self.subparsers.add_parser('jql',
                                                 help='Jira Query Language',
                                                 parents=[self.output_parent_parser])
-        jql_parser.set_defaults(subcommand='jql')
         jql_parser.add_argument('jql', help='jql')
+        jql_parser.set_defaults(subcommand='jql')
 
     def create_subparser(self):
         """ Create subparsers """
@@ -123,6 +151,8 @@ class JiraCLI(CLI):
         self.create_subparser_board()
         self.create_subparser_sprint()
         self.create_subparser_epic()
+        self.create_subparser_version()
+        self.create_subparser_backlog()
         self.create_subparser_jql()
 
     def create_parser(self):
@@ -241,3 +271,26 @@ class JiraCLI(CLI):
             formatter = Simple()
             epic = service.epic(args.epicId)
             print(formatter.format_epic(epic))
+
+    def parse_versions(self, service, args):
+        """ Parse versions command """
+        formatter = Simple(oneline=args.oneline)
+        for versions in service.versions(args.boardId):
+            print(formatter.format_versions(versions))
+
+    def parse_version(self, service, args):
+        """ Parse version command """
+        if hasattr(args, 'version_subcommand'):
+            if args.version_subcommand == 'issues':
+                formatter = Simple(oneline=args.oneline)
+                for issues in service.version_issues(args.versionId):
+                    print(formatter.format_issues(issues))
+        else:
+            formatter = Simple()
+            version = service.version(args.versionId)
+            print(formatter.format_version(version))
+
+    def parse_backlog(self, service, args):
+        formatter = Simple(oneline=args.oneline)
+        for issues in service.backlog(args.boardId):
+            print(formatter.format_issues(issues))

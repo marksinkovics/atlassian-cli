@@ -11,7 +11,8 @@ from tests.mock.jira.models import (
     ISSUES, ISSUE,
     BOARDS, BOARD,
     SPRINTS, SPRINT,
-    EPICS, EPIC
+    EPICS, EPIC,
+    VERSIONS, VERSION
 )
 
 # pylint: disable=R0201, C0122
@@ -132,7 +133,6 @@ class JiraCLITestCase:
         jira_main()
         mock_format.assert_called_with(ISSUES)
 
-
     #
     # Epic
     #
@@ -146,8 +146,6 @@ class JiraCLITestCase:
         mock_service.return_value = iter([EPICS])
         jira_main()
         mock_format.assert_called_with(EPICS)
-
-
 
     @patch('sys.argv', [JIRA_CLI_PROG, 'epic', '12345'])
     @patch('atlassian_cli.atlassian.jira.service.JiraService.epic')
@@ -168,3 +166,51 @@ class JiraCLITestCase:
         mock_service.return_value = iter([ISSUES])
         jira_main()
         mock_format.assert_called_with(ISSUES)
+
+    #
+    # Version
+    #
+
+    @patch('sys.argv', [JIRA_CLI_PROG, 'versions', '12345'])
+    @patch('atlassian_cli.atlassian.jira.service.JiraService.versions')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_versions')
+    def test_arg_versions(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
+    #     # pylint: disable=W0613
+        """ Test versions argument """
+        mock_service.return_value = iter([VERSIONS])
+        jira_main()
+        mock_format.assert_called_with(VERSIONS)
+
+    @patch('sys.argv', [JIRA_CLI_PROG, 'version', '1'])
+    @patch('atlassian_cli.atlassian.jira.service.JiraService.version')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_version')
+    def test_arg_version(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
+    #     # pylint: disable=W0613
+        """ Test version argument """
+        mock_service.return_value = VERSION
+        jira_main()
+        mock_format.assert_called_with(VERSION)
+
+    @patch('sys.argv', [JIRA_CLI_PROG, 'version', '1', 'issues'])
+    @patch('atlassian_cli.atlassian.jira.service.JiraService.version_issues')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_issues')
+    def test_arg_version_issues(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
+    #     # pylint: disable=W0613
+        """ Test version argument """
+        mock_service.return_value = iter([ISSUES])
+        jira_main()
+        mock_format.assert_called_with(ISSUES)
+
+    #
+    # Backlog
+    #
+
+    @patch('sys.argv', [JIRA_CLI_PROG, 'backlog', '1'])
+    @patch('atlassian_cli.atlassian.jira.service.JiraService.backlog')
+    @patch('atlassian_cli.atlassian.jira.formatters.Simple.format_issues')
+    def test_arg_backlog(self, mock_format, mock_service, mock_userconfig_users, mock_keyring):
+    #     # pylint: disable=W0613
+        """ Test version argument """
+        mock_service.return_value = iter([VERSIONS])
+        jira_main()
+        mock_format.assert_called_with(VERSIONS)

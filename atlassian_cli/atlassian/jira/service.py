@@ -7,8 +7,12 @@ from atlassian_cli.atlassian.jira.models import (
     Issue,
     User,
     Sprint,
-    Epic
+    Epic,
+    Version
 )
+
+from jsonobject.exceptions import BadValueError
+import datetime
 
 class JiraService(Service):
     """ Handle Jira services """
@@ -146,5 +150,31 @@ class JiraService(Service):
     def epic_issues(self, epic_id):
         """ Get issues of a specific epic """
         url = self.model.url + '/rest/agile/1.0/epic/' + epic_id + '/issue'
+        for values in self.iterator_get(url, values_key='issues'):
+            yield list(map(Issue, values))
+
+    def versions(self, board_id):
+        """ Get versions for a specific boards """
+        url = self.model.url + '/rest/agile/1.0/board/' + board_id + '/version'
+        for values in self.iterator_get(url):
+            versions = list(map(Version, values))
+            yield versions
+
+    def version(self, version_id):
+        """ Get information about a specific version """
+        url = self.model.url + '/rest/api/2/version/' + version_id
+        value = self.get(url).json()
+        value['id'] = int(value['id'])
+        value['releaseDate'] = datetime.datetime.strptime(value['releaseDate'], '%Y-%m-%d').isoformat()
+        value['startDate'] = datetime.datetime.strptime(value['startDate'], '%Y-%m-%d').isoformat()
+        return Version(value)
+
+    def version_issues(self, version_id):
+        """ Get issues of a specific version """
+        return self.jql("fixVersion = " + version_id)
+
+    def backlog(self, board_id):
+        """ Get issues of backlog for specific board """
+        url = self.model.url + '/rest/agile/1.0/board/' + board_id + '/backlog'
         for values in self.iterator_get(url, values_key='issues'):
             yield list(map(Issue, values))

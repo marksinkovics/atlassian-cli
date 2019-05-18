@@ -89,6 +89,16 @@ class Simple(Formatter):
         results = list(map(self.format_epic, epics))
         return "\n".join(results)
 
+    def format_version(self, version):
+        """ Format an Version model """
+        result = '{:15} - {}'.format(colored(version.id_, attrs=['bold']), version.name)
+        return result
+
+    def format_versions(self, versions):
+        """ Format a list of Version model """
+        results = list(map(self.format_version, versions))
+        return "\n".join(results)
+
     def format_status(self, status):
         """ Format an Status model """
         color = status.statusCategory.color()
